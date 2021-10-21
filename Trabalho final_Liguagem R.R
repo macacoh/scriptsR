@@ -398,13 +398,14 @@ ICparaMenos <- média - 1.959964 * (desvio.padrão/sqrt(53))
 ICparaMais - ICparaMenos
 
 #Teste T e Mann-Whitney
-#Teste T para os dados que passaram pelos pressupostos de normalidade
-#teste DOMINICANUS para as duas localidades
-t.test(dominicanus$contagem[dominicanus$local=="paranapua"], dominicanus$contagem[dominicanus$local=="itaipu"])
-#resultado do teste para DOMINICANUS: t = 1.6673, df = 21.546, p-value = 0.1099
-#leitura do teste:
+#Como a uma das localidades de todas as espécies tinham dados assimétricos, optei por fazer MANN-Whitney para todas as espécies
 
 #Teste MANN-WHITNEY para os dados que não passaram pelos pressupostos de normalidade
+#teste DOMINICANUS para as duas localidades
+wilcox.test(dominicanus$contagem[dominicanus$local=="paranapua"], dominicanus$contagem[dominicanus$local=="itaipu"])
+#resultado do teste para DOMINICANUS: W = 107, p-value = 0.04421
+#leitura do teste:
+
 #teste ACUFLAVIDUS para as duas localidades
 wilcox.test(acuflavidus$contagem[acuflavidus$local=="paranapua"], acuflavidus$contagem[acuflavidus$local=="itaipu"])
 #resultado do teste: W = 15, p-value = 0.0006031
@@ -438,6 +439,11 @@ tapply(dominicanus$contagem, dominicanus$local, mean) #média (ita:3.66667; par:
 media_max<-mean(maximus$contagem) #5.583333
 media_acu<-mean(acuflavidus$contagem) #36.5
 media_dom<-mean(dominicanus$contagem) #5.16667
+
+#testando o argumento "trim" para eliminar 10% dos maiores e dos menores valores
+media_max<-mean(maximus$contagem, trim=0.1)#4.9
+media_acu<-mean(acuflavidus$contagem, trim=0.1) #23.6
+media_dom<-mean(dominicanus$contagem, trim=0.1) #4.6
 
 #há diferença entre as médias de MAXIMUS e DOMINICANUS?
 wilcox.test(maximus$contagem, dominicanus$contagem)
