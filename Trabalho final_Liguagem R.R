@@ -82,6 +82,8 @@ dominicanus <- dados_laridae %>% filter(., especie == "Larus dominicanus")
 itaipu <- dados_laridae %>% filter(., local == "itaipu")
 paranapua <- dados_laridae %>% filter(., local == "paranapua")
 
+#é possível fazer filtro das datas? (buscar mais infos sobre)
+
 #verificando as classes e médias de cada espécie
 str(maximus)
 str(acuflavidus)
@@ -105,11 +107,12 @@ tapply(dominicanus$contagem, dominicanus$local, mean) #média
 tapply(dominicanus$contagem, dominicanus$local, median) #mediana
 
 #histograma dos dados
+par(mfrow=c(2,2))
 hist(dados_laridae$contagem)
 hist(maximus$contagem)
 hist(acuflavidus$contagem)
 hist(dominicanus$contagem)
-box()
+dev.off() #"desligando" o par(mfrow=c(3,1)
 
 #-----
 #Olhando os dados de outra forma e comparando com a curva normal (tracejada)
@@ -142,11 +145,12 @@ curve(dnorm(x,mean(dominicanus$contagem),sd(dominicanus$contagem)), add=T, lty=2
 
 dev.off() #"desligando" o par(mfrow=c(3,1)
 
+#salvar o gráfico
 savePlot(filename = "curvanormalESPECIES_localidade.png", type = "png")#salvar o gráfico em png
-
 
 #visualizar os dados por categoria (tratamentos)
 #MAXIMUS por local
+par(mfrow=c(3,2))
 hist(maximus$contagem[maximus$local=="itaipu"]) #simétricos 
 hist(maximus$contagem[maximus$local=="paranapua"]) #assimétrica negativa
 
@@ -158,6 +162,7 @@ hist(acuflavidus$contagem[acuflavidus$local=="paranapua"]) #assimétrica negativ
 hist(dominicanus$contagem[dominicanus$local=="itaipu"]) #assimétrica negativa
 hist(dominicanus$contagem[dominicanus$local=="paranapua"]) #assimétrica negativa
 #resultados deste histograma não coincidiram com o gráfico acima que tem a curva normal (VERIFICAR)
+dev.off()
 
 #Interessante de ver! 
 #Olhando para os dados de contagem por área de coleta e por espécie
@@ -206,6 +211,7 @@ curve(dnorm(x,mean(dominicanus$contagem[dominicanus$local=="paranapua"]),sd(domi
 
 dev.off() #"desligando" o par(mfrow=c(2,1)
 
+#salvar o gráfico
 savePlot(filename = "curvanrormalESPECIES_localidade2.png", type = "png")#salvar o gráfico em png
 
 #Vamos fazer uma avaliação com todas as categorias de local no mesmo plot
@@ -225,6 +231,7 @@ levels(dados_laridae$local)
 legend("topright", labs, lty=c(1), col=c("red","blue","green", "purple", "black", "orange", bty="n",  lwd=4))
 ?legend
 
+#salvar o gráfico
 savePlot(filename = "normalidadeESPECIES_localidade.png", type = "png")#salvar o gráfico em png
 
 #qqnorm é uma função genérica cujo método padrão produz um gráfico dos valores linearizados em y. 
@@ -263,6 +270,7 @@ qqline(dominicanus$contagem[dominicanus$local=="itaipu"], lt=2)
 
 dev.off() #"desligando" o par(mfrow=c(3,2)
 
+#salvar o gráfico
 savePlot(filename = "normalidadeESPECIES_localidade.png", type = "png")#salvar o gráfico em png
 
 #ANÁLISE DA NORMALIDADE
@@ -276,14 +284,19 @@ savePlot(filename = "normalidadeESPECIES_localidade.png", type = "png")#salvar o
 
 #Teste de normalidade (Shapiro Wilk)
 #maximus
-shapiro.test(maximus$contagem[maximus$local=="itaipu"]) #resultados: W = 0.96577, p-value = 0.8619
-shapiro.test(maximus$contagem[maximus$local=="paranapua"]) #resultados: W = 0.59412, p-value = 9.586e-05
+shapiro.test(maximus$contagem[maximus$local=="itaipu"]) #resultados: W = 0.96577, p-value = 0.8619 (maior que 0,05: dados simétricos)
+shapiro.test(maximus$contagem[maximus$local=="paranapua"]) #resultados: W = 0.59412, p-value = 9.586e-05 (menor que 0,05: dados assimétricos)
+shapiro.test(maximus$contagem) #resultado: W = 0.83596, p-value = 0.001213 (menor que 0,05: dados assimétricos)
+
 #acuflavidus
-shapiro.test(acuflavidus$contagem[acuflavidus$local=="itaipu"]) #resultados: W = 0.86789, p-value = 0.06146
-shapiro.test(acuflavidus$contagem[acuflavidus$local=="paranapua"]) # resultados:W = 0.50433, p-value = 1.902e-05
+shapiro.test(acuflavidus$contagem[acuflavidus$local=="itaipu"]) #resultados: W = 0.86789, p-value = 0.06146 (maior que 0,05: dados simétricos)
+shapiro.test(acuflavidus$contagem[acuflavidus$local=="paranapua"]) # resultados:W = 0.50433, p-value = 1.902e-05 (menor que 0,05: dados assimétricos)
+shapiro.test(acuflavidus$contagem) #W = 0.66603, p-value = 3.698e-06 (menor que 0,05: dados assimétricos)
+
 #dominicanus
-shapiro.test(dominicanus$contagem[dominicanus$local=="itaipu"]) #resultados: W = 0.82575, p-value = 0.01867
-shapiro.test(dominicanus$contagem[dominicanus$local=="paranapua"]) #resultados: W = 0.89264, p-value = 0.1275
+shapiro.test(dominicanus$contagem[dominicanus$local=="itaipu"]) #resultados: W = 0.82575, p-value = 0.01867 (menor que 0,05: dados assimétricos)
+shapiro.test(dominicanus$contagem[dominicanus$local=="paranapua"]) #resultados: W = 0.89264, p-value = 0.1275 (maior que 0,05: dados simétricos)
+shapiro.test(dominicanus$contagem) #resultados: W = 0.88613, p-value = 0.01107 (menor que 0,05: dados assimétricos)
 
 #HOMOGENEIDADE DE VARIANCIAS  
 #calculando as variancias das variáveis - MAXIMUS
@@ -308,13 +321,15 @@ var_dom <- tapply(dominicanus$contagem, dominicanus$local, var) #DOMINICANUS
 ?var.test
 var.test(maximus$contagem[maximus$local=="itaipu"], maximus$contagem[maximus$local=="paranapua"])
 #F = 11.997, num df = 11, denom df = 11, p-value = 0.0002664
+#resultado da estatística alta, mostrando que os dados são heterogêneos
 
 var.test(acuflavidus$contagem[acuflavidus$local=="itaipu"], acuflavidus$contagem[acuflavidus$local=="paranapua"])
 #F = 588.24, num df = 11, denom df = 11, p-value = 2.776e-13
+#resultado da estatística alta, mostrando que os dados são heterogêneos
 
 var.test(dominicanus$contagem[dominicanus$local=="itaipu"], dominicanus$contagem[dominicanus$local=="paranapua"])
 #F = 0.74659, num df = 11, denom df = 11, p-value = 0.6363
-#resultado da estatística alta, mostrando que os dados são heterogêneos
+#resultado da estatística baixa, mostrando que os dados são homogêneos (?)
 
 #---------------------------------------------
 #PERGUNTA 2: há diferença nas médias das espécies por localidade?
@@ -330,9 +345,6 @@ média_max_ita <- mean(maximus$contagem[maximus$local=="itaipu"])
 desvio.padrão_max_par <- sd(maximus$contagem[maximus$local=="paranapua"]) 
 erro.padrão_max_par <- desvio.padrão_max_par/sqrt(length(maximus$contagem[maximus$local=="paranapua"]))
 média_max_par <- mean(maximus$contagem[maximus$local=="paranapua"])
-
-# IC (95%)
-IC.contagem.max <- qnorm(0.975)*erro.padrão_max
 
 #dados para as duas localidades - MAXIMUS
 desvio.padrão_max <- sd(maximus$contagem) 
@@ -380,9 +392,10 @@ erro.padrão_dom <- desvio.padrão_dom/sqrt(length(dominicanus$contagem))
 média_dom <- mean(dominicanus$contagem)
 
 # IC (95%) - duas localidades
-IC.contagem.acu <- qnorm(0.975)*erro.padrão_dom
+IC.contagem.dom <- qnorm(0.975)*erro.padrão_dom
 
 summary(dominicanus)
+
 # *------
 
 #Distribuição normal T
@@ -404,17 +417,17 @@ ICparaMais - ICparaMenos
 #teste DOMINICANUS para as duas localidades
 wilcox.test(dominicanus$contagem[dominicanus$local=="paranapua"], dominicanus$contagem[dominicanus$local=="itaipu"])
 #resultado do teste para DOMINICANUS: W = 107, p-value = 0.04421
-#leitura do teste:
+#leitura do teste: p é menor do que o alfa (0,05), rejeita H0, ou seja, a diferença entre as medianas é significativa
 
 #teste ACUFLAVIDUS para as duas localidades
 wilcox.test(acuflavidus$contagem[acuflavidus$local=="paranapua"], acuflavidus$contagem[acuflavidus$local=="itaipu"])
 #resultado do teste: W = 15, p-value = 0.0006031
-#leitura do teste:
+#leitura do teste: p é menor do que o alfa (0,05), rejeita H0, ou seja, a diferença entre as medianas é significativa
 
 #teste MAXIMUS para as duas localidades
 wilcox.test(maximus$contagem[maximus$local=="paranapua"], maximus$contagem[maximus$local=="itaipu"])
 #resultado do teste:W = 8.5, p-value = 0.0001825
-#leitura do teste:
+#leitura do teste: p é menor do que o alfa (0,05), rejeita H0, ou seja, a diferença entre as medianas é significativa
 
 #---------------------------------------------
 #PERGUNTA 3: qual a espécie foi mais observada nesse período de tempo?
@@ -422,16 +435,22 @@ sum(maximus$contagem) #134
 sum(acuflavidus$contagem) #876 - mais abundante (contado as duas localidades)
 sum(dominicanus$contagem) #124 - 
 
-#espécie MAXIMUS por localidade
+#espécie MAXIMUS por localidade e total
 sum(maximus$contagem[maximus$local=="paranapua"]) #9
 sum(maximus$contagem[maximus$local=="itaipu"]) #125
-#espécie ACUFLAVIDUS por localidade
+contagem_max<-sum(maximus$contagem[maximus$local=="paranapua"],maximus$contagem[maximus$local=="itaipu"])#134
+#espécie ACUFLAVIDUS por localidade e total
 sum(acuflavidus$contagem[acuflavidus$local=="paranapua"]) #15
 sum(acuflavidus$contagem[acuflavidus$local=="itaipu"]) #861
-#espécie DOMINUCANUS por localidade
+contagem_acu<-sum(acuflavidus$contagem[acuflavidus$local=="paranapua"],acuflavidus$contagem[acuflavidus$local=="itaipu"])#876
+#espécie DOMINUCANUS por localidade e total
 sum(dominicanus$contagem[dominicanus$local=="paranapua"]) #80
 sum(dominicanus$contagem[dominicanus$local=="itaipu"]) #44
+contagem_dom<-sum(dominicanus$contagem[dominicanus$local=="paranapua"],dominicanus$contagem[dominicanus$local=="itaipu"])#124
+#todas as espécies
+sum(dados_laridae$contagem)#total 1134
 
+#voltando nas médias por espécie e localidade
 tapply(maximus$contagem, maximus$local, mean) #média (ita:10.41667; par: 0.75), mais em itaipu
 tapply(acuflavidus$contagem, acuflavidus$local, mean) #média (ita:71.75; par: 1.2), mais em itaipu
 tapply(dominicanus$contagem, dominicanus$local, mean) #média (ita:3.66667; par: 6.66667), mais em paranapuã
@@ -441,6 +460,7 @@ media_acu<-mean(acuflavidus$contagem) #36.5
 media_dom<-mean(dominicanus$contagem) #5.16667
 
 #testando o argumento "trim" para eliminar 10% dos maiores e dos menores valores
+#média
 media_max<-mean(maximus$contagem, trim=0.1)#4.9
 media_acu<-mean(acuflavidus$contagem, trim=0.1) #23.6
 media_dom<-mean(dominicanus$contagem, trim=0.1) #4.6
@@ -448,6 +468,36 @@ media_dom<-mean(dominicanus$contagem, trim=0.1) #4.6
 #há diferença entre as médias de MAXIMUS e DOMINICANUS?
 wilcox.test(maximus$contagem, dominicanus$contagem)
 #resultado do teste: W = 275, p-value = 0.7945
+#leitura: p maior que alfa (0,05), a diferença não é significativa
+
+#há diferença entre as médias de MAXIMUS e ACUFLAVIDUS?
+wilcox.test(maximus$contagem, acuflavidus$contagem)
+#resultado do teste: W = 250, p-value = 0.422
+#leitura: p maior que alfa (0,05), a diferença não é significativa
+
+#há diferença entre as médias de ACUFLAVIDUS e DOMINICANUS?
+wilcox.test(dominicanus$contagem, acuflavidus$contagem)
+#resultado do teste: W = 291.5, p-value = 0.95
+#leitura: p maior que alfa (0,05), a diferença não é significativa
+
+#valores mínimos e máximos das espécies nas localidades
+#MAXIMUS
+max(maximus$contagem[maximus$local=="itaipu"])
+min(maximus$contagem[maximus$local=="itaipu"])
+max(maximus$contagem[maximus$local=="paranapua"])
+min(maximus$contagem[maximus$local=="paranapua"])
+
+#ACUFLAVIDUS
+max(acuflavidus$contagem[acuflavidus$local=="itaipu"])
+min(acuflavidus$contagem[acuflavidus$local=="itaipu"])
+max(acuflavidus$contagem[acuflavidus$local=="paranapua"])
+min(acuflavidus$contagem[acuflavidus$local=="paranapua"])
+
+#DOMINICANUS
+max(dominicanus$contagem[dominicanus$local=="itaipu"])
+min(dominicanus$contagem[dominicanus$local=="itaipu"])
+max(dominicanus$contagem[dominicanus$local=="paranapua"])
+min(dominicanus$contagem[dominicanus$local=="paranapua"])
 
 #-------------------------
 
@@ -484,6 +534,7 @@ legend("topright", labs, lty=c(1), legend = "dominicanus",
        pch = 15, bty = "n")
 dev.off()  #"desligando" o par(mfrow=c(3,1)
 
+#salvar o gráfico
 savePlot(filename = "plotESPECIES_localidade.png", type = "png") #salvar o gráfico em png
 
 
@@ -508,11 +559,12 @@ boxplot( contagem ~ local, data=dominicanus,
          col = "gray90")
 dev.off()  #"desligando" o par(mfrow=c(3,1)
 
+#salvar o gráfico
 savePlot(filename = "bloxpotESPECIES_localidade.png", type = "png")#salvar o gráfico em png
 
 #histogramas para ver diferenças entre os locais de amostragem por espécie
 #MAXIMUS por localidade
-par(mfrow=c(2,1),mar = c(4, 4, 1, 1), family = "serif",cex.axis = 1,
+par(mfrow=c(3,2),mar = c(4, 4, 1, 1), family = "serif",cex.axis = 1,
     cex.lab=1,  las=1,tcl=0.3)   
 hist(maximus$contagem[maximus$local=="itaipu"],
      main="MAXIMUS",
@@ -524,6 +576,7 @@ hist(maximus$contagem[maximus$local=="paranapua"],
      ylab="contagem")
 dev.off()  #"desligando" o par(mfrow=c(3,1)
 
+#salvar o gráfico
 savePlot(filename = "histMAXIMUS_localidade.png", type = "png")#salvar o gráfico em png
 
 #ACUFLAVIDUS por localidade
@@ -539,21 +592,25 @@ hist(acuflavidus$contagem[acuflavidus$local=="paranapua"],
      ylab="contagem")
 dev.off()  #"desligando" o par(mfrow=c(3,1)
 
+#salvar o gráfico
 savePlot(filename = "histACUFLAVIDUS_localidade.png", type = "png")#salvar o gráfico em png
 
 
 #DOMINICANUS por localidade
 par(mfrow=c(2,1),mar = c(4, 4, 1, 1), family = "serif",cex.axis = 1,
     cex.lab=1,  las=1,tcl=0.3)   
-hist(dominucanus$contagem[dominucanus$local=="itaipu"],
+hist(dominicanus$contagem[dominicanus$local=="itaipu"],
      main="DOMINICANUS",
      xlab="itaipu",
      ylab="contagem",)  
-hist(dominucanus$contagem[dominucanus$local=="paranapua"],
+hist(dominicanus$contagem[dominicanus$local=="paranapua"],
      main=NULL,
      xlab="paranapua",
      ylab="contagem")
 dev.off()  #"desligando" o par(mfrow=c(3,1)
 
+#salvar o gráfico
 savePlot(filename = "histDOMINICANUS_localidade.png", type = "png")#salvar o gráfico em png
+
+#*------FIM DO SCRIPT!!!! <3
 
